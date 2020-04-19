@@ -6,7 +6,7 @@ import paho.mqtt.client as mqtt
 
 class Messaging:
 
-    def __init__(self, config, clientId, callback = None, subscription = None):
+    def __init__(self, config, clientId, qos = 0, subscription = None):
         global on_connect
         self.config = config
         self.client = mqtt.Client(clientId)
@@ -14,13 +14,10 @@ class Messaging:
         self.client.on_connect = on_connect
         self.client.on_disconnect = on_disconnect
 
-        if (callback):
-            self.client.on_message = callback
-
         if (subscription):
-            logging.info("subscription: " + subscription)
-            self.client.user_data_set(subscription)
-        
+            self.client.user_data_set(subscription[0])
+            self.client.on_message = subscription[1]
+
         self.client.username_pw_set(config['username'], config['password'])
         port = int(config['port'])
         self.client.connect(config['host'], port)
