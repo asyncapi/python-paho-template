@@ -1,0 +1,32 @@
+{%- macro modelClass(name, schema, properties, required, indentLevel) %}
+{%- set className = name | upperFirst %}
+{% set indent1 = indentLevel | indent1 -%}
+{% set indent2 = indentLevel | indent2 -%}
+{% set indent3 = indentLevel | indent3 -%}
+
+class {{name | upperFirst}}(Entity):
+
+{{indent2}}def __init__(
+{%- set first = true -%}
+{%- for name, prop in properties -%}
+{%- set pythonName = name | identifierName -%}
+{%- if first -%}
+{%- set first = false -%}
+{%- else -%}
+, {% endif %}
+{{ indent3 }}{{ pythonName }}
+{%- endfor -%}
+):
+{%- for name, prop in properties -%}
+{%- set pythonName = name | identifierName %}
+{{ indent3}}self.{{pythonName}} = {{pythonName}}
+{%- endfor -%}
+
+{%- for name, prop in properties -%}
+{%- set pythonName = name | identifierName %}
+{%- set typeInfo = [name, pythonName, prop] | fixType -%}
+{%- if typeInfo[1] -%}
+{{ modelClass(pythonName, null, prop.properties(), prop.required(), indentLevel+1) }}
+{%- endif %}
+{%- endfor %}
+{% endmacro -%}

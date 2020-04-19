@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import configparser
 import json
+import logging
+import time
+
 import paho.mqtt.client as mqtt
 import messaging
 from order import Order
-import time
 
 order_topic = "order"
 address_topic = "address"
@@ -20,28 +22,31 @@ def getConfig():
     # The callback for when a PUBLISH message is received from the server.
 def on_order_message(client, userdata, msg):
     m = msg.payload.decode('utf-8')
-    print("got a message on topic '" + msg.topic + "' : " + m)
+    logging.info("got a message on topic '" + msg.topic + "' : " + m)
     o = Order.from_json(m)
-    print(o)
+    logging.info(o)
 
 def on_address_message(client, userdata, msg):
     m = msg.payload.decode('utf-8')
-    print("got a message on topic '" + msg.topic + "' : " + m)
+    logging.info("got a message on topic '" + msg.topic + "' : " + m)
     o = Order.Address.from_json(m)
-    print(o)
+    logging.info(o)
 
 def main():
     global order_topic, address_topic
+    logging.basicConfig(level=logging.DEBUG)
+    logging.info("Start of main.")
     config = getConfig()
-    orderMessenger = messaging.Messaging(config, on_order_message, order_topic)
+    #orderMessenger = messaging.Messaging(config, "orderClient", on_order_message, order_topic)
+    orderMessenger = messaging.Messaging(config, "orderClient", 2)
     print("starting orderMessenger")
     orderMessenger.loop_start()
 
-    addressMessenger = messaging.Messaging(config, on_address_message, address_topic)
+    addressMessenger = messaging.Messaging(config, "addressClient", 1, (address_topic, on_address_message))
     print("starting addressMessenger")
     addressMessenger.loop_start()
 
-    # Create a person object, and then encode it as json and publish it.
+    # Create an address object and an order object. Encode them as json and publish them.
     adr = Order.Address("12A", 'Main St.')
     ord = Order('shoes', 12.99, adr)
     ordStr = ord.to_json()
