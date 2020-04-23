@@ -1,0 +1,42 @@
+# vim: set ts=2 sw=2 sts=2 expandtab :
+---
+asyncapi: "2.0.0"
+id: "urn:com:solace"
+info:
+  description: "Temperature Readings"
+  title: "Temperature Readings"
+  version: "1.0.0"
+  x-java-package: "com.solace.scs.gen"
+  x-spring-cloud-stream-version: "3.0.1.RELEASE"
+  x-artifact-id: "scs-temp"
+  x-group-id: "com.solace"
+channels:
+  sensor/temperature/fahrenheit:
+    subscribe:
+      x-scs-function-name: sub
+      message:
+        $ref: "#/components/messages/SensorReadingMessage"
+    publish:
+      x-scs-function-name: pub
+      message:
+        $ref: "#/components/messages/SensorReadingMessage"
+components:
+  schemas:
+    SensorReading:
+      title: SensorReading
+      type: object
+      properties:
+        sensorId:
+          type: string
+        temperature:
+          type: number
+        baseUnit:
+          enum: [
+            CELSIUS,
+            FAHRENHEIT
+          ]
+  messages:
+    SensorReadingMessage:
+      name: sensorReadingMessage
+      payload:
+        $ref: "#/components/schemas/SensorReading"

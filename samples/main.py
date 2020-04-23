@@ -19,7 +19,6 @@ def getConfig():
     return config
 
 # This callback gets called when we receive a message.
-    # The callback for when a PUBLISH message is received from the server.
 def on_order_message(client, userdata, msg):
     m = msg.payload.decode('utf-8')
     logging.info("got a message on topic '" + msg.topic + "' : " + m)
@@ -38,11 +37,11 @@ def main():
     logging.info("Start of main.")
     config = getConfig()
     #orderMessenger = messaging.Messaging(config, "orderClient", on_order_message, order_topic)
-    orderMessenger = messaging.Messaging(config, "orderClient", 2)
+    orderMessenger = messaging.Messaging(config, "orderClient")
     print("starting orderMessenger")
     orderMessenger.loop_start()
 
-    addressMessenger = messaging.Messaging(config, "addressClient", 1, (address_topic, on_address_message))
+    addressMessenger = messaging.Messaging(config, "addressClient", address_topic, on_address_message)
     print("starting addressMessenger")
     addressMessenger.loop_start()
 
@@ -53,9 +52,9 @@ def main():
     adrStr = adr.to_json()
 
     while(True):
-        orderMessenger.publish(order_topic, ordStr)
+        orderMessenger.publish(order_topic, ordStr, 2)
         time.sleep(1)
-        addressMessenger.publish(address_topic, adrStr)
+        addressMessenger.publish(address_topic, adrStr, 2)
         time.sleep(1)
 
 if __name__ == '__main__':

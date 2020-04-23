@@ -5,15 +5,16 @@ import json
 import paho.mqtt.client as mqtt
 
 class Messaging:
-
+    """ This is a wrapper for the mqtt client. """
+    
     def __init__(self, config, subscription = None, on_message = None, clientId = None):
         global on_connect
         self.config = config
 
         if (clientId):
-            self.client = mqtt.Client()
-        else:
             self.client = mqtt.Client(clientId)
+        else:
+            self.client = mqtt.Client()
 
         self.client.enable_logger()
         self.client.on_connect = on_connect
@@ -42,5 +43,5 @@ class Messaging:
 
 def on_connect(client, userdata, flags, rc):
     if (userdata):
-        client.subscribe(userdata, 2)
+        client.subscribe(userdata)
 
