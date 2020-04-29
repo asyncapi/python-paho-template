@@ -25,9 +25,9 @@ def getConfig():
 {%- set varName =  payloadClass | lowerFirst %}
 def {{ functionName }}(client, userdata, msg):
     jsonString = m = msg.payload.decode('utf-8')
-    logging.debug('Received json: ' + jsonString)
+    logging.info('Received json: ' + jsonString)
     {{ varName }} = {{ payloadClass }}.from_json(jsonString)
-    logging.info('Received message: ' + {{ varName }})
+    logging.info('Received message: ' + str({{ varName }}))
 {% endif %}
 {% endfor %}
 
