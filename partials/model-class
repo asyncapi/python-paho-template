@@ -7,7 +7,7 @@
 
 {{ indent1 }}class {{name | upperFirst}}(Entity):
 {% for name, prop in properties -%}
-{%- set typeInfo = [name, prop] | determineType -%}
+{%- set typeInfo = [name, prop] | getTypeInfo -%}
 {%- if typeInfo.generalType === 'object' -%}
 {{ modelClass(typeInfo.pythonType, null, prop.properties(), prop.required(), indentLevel+1) }}
 {%- elif typeInfo.generalType === 'enum' %}
@@ -24,13 +24,13 @@
 {{indent2}}def __init__(
 {{ indent4 }}self
 {%- for name, prop in properties -%}
-{%- set typeInfo = [name, prop] | determineType -%}
+{%- set typeInfo = [name, prop] | getTypeInfo -%}
 ,
 {{ indent4 }}{{typeInfo.pythonName}}{{ ": " + typeInfo.pythonType if typeInfo.pythonType else ""}}
 {%- endfor -%}
 ):
 {%- for name, prop in properties -%}
-{%- set typeInfo = [name, prop] | determineType %}
+{%- set typeInfo = [name, prop] | getTypeInfo %}
 {{ indent3}}self.{{typeInfo.pythonName}} = {{typeInfo.pythonName}}
 {%- endfor %}
 
