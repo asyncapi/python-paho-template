@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import configparser
 import logging
+import time
 
 import messaging
 
@@ -24,7 +25,7 @@ def getConfig():
 {%- set payloadClass = channel.subscribe() | payloadClass -%}
 {%- set varName =  payloadClass | lowerFirst %}
 def {{ functionName }}(client, userdata, msg):
-    jsonString = m = msg.payload.decode('utf-8')
+    jsonString = msg.payload.decode('utf-8')
     logging.info('Received json: ' + jsonString)
     {{ varName }} = {{ payloadClass }}.from_json(jsonString)
     logging.info('Received message: ' + str({{ varName }}))
@@ -44,15 +45,15 @@ def main():
 {%- endif %}
     {{ messenger.name }}.loop_start()
 {%- endfor %}
-
-
-# TODO: Add your business logic here.
 {% set messenger = asyncapi | getFirstPublisherMessenger -%}
-{%- if messenger -%}
-# To send a message, do this:
-# payload = YourPayloadClass(yourArgs)
-# jsonString = payload.to_json()
-# {{ messenger.name }}.publish("yourTopic", jsonString)
+{%- if messenger %}
+    # Example of how to publish a message:
+    payload = {{ messenger.payloadClass }}()
+    payloadJson = payload.to_json()
+
+    while (True):
+        {{ messenger.name }}.publish('{{ messenger.topic }}', payloadJson)
+        time.sleep(1)
 {%- endif %}
 
 if __name__ == '__main__':
