@@ -20,9 +20,10 @@ def getConfig():
     return config
 
 {% for channelName, channel in asyncapi.channels() -%}
-{%- if channel.hasSubscribe() -%}
+{% set sub = [asyncapi.info(), params, channel] | getRealSubscriber -%}
+{%- if sub -%}
 {%- set functionName = [channelName, channel] | functionName -%}
-{%- set payloadClass = channel.subscribe() | payloadClass -%}
+{%- set payloadClass = sub | payloadClass -%}
 {%- set varName =  payloadClass | lowerFirst %}
 def {{ functionName }}(client, userdata, msg):
     jsonString = msg.payload.decode('utf-8')
@@ -36,23 +37,23 @@ def main():
     logging.basicConfig(level=logging.INFO)
     logging.info('Start of main.')
     config = getConfig()
-{% set messengers = asyncapi | getMessengers -%}
+{% set messengers = [params, asyncapi] | getMessengers -%}
 {%- for messenger in messengers -%}
-{%- if messenger.topic %}
+{%- if messenger.subscribeTopic %}
     {{ messenger.name }} = messaging.Messaging(config, '{{ messenger.topic }}', {{ messenger.functionName }})
 {%- else %}
     {{ messenger.name }} = messaging.Messaging(config)
 {%- endif %}
     {{ messenger.name }}.loop_start()
 {%- endfor %}
-{% set messenger = asyncapi | getFirstPublisherMessenger -%}
+{% set messenger = [params, asyncapi] | getFirstPublisherMessenger -%}
 {%- if messenger %}
     # Example of how to publish a message:
     payload = {{ messenger.payloadClass }}()
     payloadJson = payload.to_json()
 
     while (True):
-        {{ messenger.name }}.publish('{{ messenger.topic }}', payloadJson)
+        {{ messenger.name }}.publish('{{ messenger.publishTopic }}', payloadJson)
         time.sleep(1)
 {%- endif %}
 

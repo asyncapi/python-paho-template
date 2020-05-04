@@ -20,12 +20,11 @@ function functionName([channelName, channel]) {
 }
 filter.functionName = functionName;
 
-// This returns an object containing information the template needs to render topic strings.
-function topicInfo([channelName, channel]) {
-  let p = channel.parameters();
-  return getTopicInfo(channelName, channel);
+function getRealSubscriber([info, params, channel]) {
+  let pub = templateUtil.getRealSubscriber(info, params, channel);
+  return pub
 }
-filter.topicInfo = topicInfo;
+filter.getRealSubscriber = getRealSubscriber;
 
 function indent1(numTabs) {
   return indent(numTabs);
@@ -69,6 +68,13 @@ function payloadClass(operation) {
   return ret;
 }
 filter.payloadClass = payloadClass;
+
+// This returns an object containing information the template needs to render topic strings.
+function topicInfo([channelName, channel]) {
+  let p = channel.parameters();
+  return getTopicInfo(channelName, channel);
+}
+filter.topicInfo = topicInfo;
 
 function determineType(name, property) {
   //console.log('deterineType: ' + name);
@@ -229,19 +235,21 @@ function getFunctionNameByChannel(channelName, channel) {
   return ret;
 }
 
-function getMessengers(asyncapi) {
+function getMessengers([params, asyncapi]) {
   let haveMessenger = false;
   let ret = [];
 
   for (channelName in asyncapi.channels()) {
     let channel = asyncapi.channel(channelName);
-    if (channel.hasSubscribe()) {
+    let sub = templateUtil.getRealSubscriber(asyncapi.info(), params, channel);
+
+    if (sub) {
       let messenger = {};
       let topicInfo = getTopicInfo(channelName, channel);
       messenger.name = _.camelCase(channelName) + "Messenger";
       messenger.functionName = getFunctionNameByChannel(channelName, channel);
-      messenger.topic = topicInfo.subscribeTopic;
-      messenger.payload = channel.subscribe().message().payload();
+      messenger.subscribeTopic = topicInfo.subscribeTopic;
+      messenger.payload = sub.message().payload();
       messenger.payloadClass = messenger.payload.ext('x-parser-schema-id');
       //console.log(messenger);
       ret.push(messenger);
@@ -249,8 +257,7 @@ function getMessengers(asyncapi) {
   }
 
   if (ret.length === 0) {
-    let messenger = {};
-    messenger.name = "messenger";
+    let messenger = getFirstPublisherMessenger([params, asyncapi]);
     ret.push(messenger);
   }
 
@@ -258,20 +265,25 @@ function getMessengers(asyncapi) {
 }
 filter.getMessengers = getMessengers;
 
-function getFirstPublisherMessenger(asyncapi) {
+function getFirstPublisherMessenger([params, asyncapi]) {
   for (channelName in asyncapi.channels()) {
     let channel = asyncapi.channel(channelName);
-    if (channel.hasPublish()) {
+    let pub = templateUtil.getRealPublisher(asyncapi.info(), params, channel);
+    console.log(pub);
+    if (pub) {
       let messenger = {};
       messenger.name = _.camelCase(channelName) + "Messenger";
       messenger.functionName = getFunctionNameByChannel(channelName, channel);
-      messenger.topic = channelName;
-      messenger.payload = channel.publish().message().payload();
+      messenger.publishTopic = channelName;
+      messenger.payload = pub.message().payload();
       messenger.payloadClass = messenger.payload.ext('x-parser-schema-id');
+      console.log(messenger.payloadClass);
+      console.log(messenger.name);
       return messenger;
     }
   }
 
+  console.log('this cant happen');
   let messenger = {};
   messenger.name = "messenger";
   return messenger;

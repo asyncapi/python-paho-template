@@ -1,16 +1,8 @@
 {
   "generator": ">=0.41.0 <2.0.0",
   "parameters": {
-    "host": {
-      "description": "The host connection property. Currently this only works with the Solace binder. Example: tcp://myhost.com:55555.",
-      "required": false
-    },
-    "password": {
-      "description": "The client password connection property. Currently this only works with the Solace binder.",
-      "required": false
-    },
-    "username": {
-      "description": "The client username connection property. Currently this only works with the Solace binder",
+    "view": {
+      "description": "The view that the template uses. By default it is the client view, which means that when the document says publish, we subscribe. In the case of the provider view, when the document says publish, we publish. Values are client or provider. The default is client.",
       "required": false
     }
   },
