@@ -5,7 +5,6 @@ import time
 
 import messaging
 
-{# for component in asyncapi.components().s -#}
 {% for schemaName, schema in asyncapi.components().schemas() -%}
 {% set moduleName = schemaName | lowerFirst -%}
 from {{ moduleName }} import {{ schemaName }}
