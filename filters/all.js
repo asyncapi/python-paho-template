@@ -269,7 +269,7 @@ function getFirstPublisherMessenger([params, asyncapi]) {
   for (channelName in asyncapi.channels()) {
     let channel = asyncapi.channel(channelName);
     let pub = templateUtil.getRealPublisher(asyncapi.info(), params, channel);
-    console.log(pub);
+    //(pub);
     if (pub) {
       let messenger = {};
       messenger.name = _.camelCase(channelName) + "Messenger";
@@ -277,13 +277,12 @@ function getFirstPublisherMessenger([params, asyncapi]) {
       messenger.publishTopic = channelName;
       messenger.payload = pub.message().payload();
       messenger.payloadClass = messenger.payload.ext('x-parser-schema-id');
-      console.log(messenger.payloadClass);
-      console.log(messenger.name);
+      //console.log(messenger.payloadClass);
+      //console.log(messenger.name);
       return messenger;
     }
   }
 
-  console.log('this cant happen');
   let messenger = {};
   messenger.name = "messenger";
   return messenger;
