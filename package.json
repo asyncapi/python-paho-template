@@ -1,0 +1,59 @@
+{
+  "name": "@asyncapi/python-paho-template",
+  "version": "0.2.0",
+  "description": "Python Paho template for the AsyncAPI generator.",
+  "scripts": {
+    "release": "semantic-release",
+    "lint": "eslint --config .eslintrc .",
+    "lint-fix": "eslint --fix --config .eslintrc .",
+    "get-version": "echo $npm_package_version"
+  },
+  "keywords": [
+    "asyncapi",
+    "cloud",
+    "generator",
+    "python",
+    "paho",
+    "template"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Michael Davis <michael@damaru.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@asyncapi/generator-filters": "^1.0.0",
+    "lodash": "^4.17.15",
+    "js-yaml": "^3.13.1"
+  },
+  "devDependencies": {
+    "@semantic-release/commit-analyzer": "^8.0.1",
+    "@semantic-release/github": "^7.0.4",
+    "@semantic-release/npm": "^7.0.3",
+    "@semantic-release/release-notes-generator": "^9.0.1",
+    "conventional-changelog-conventionalcommits": "^4.2.3",
+    "eslint": "^6.8.0",
+    "semantic-release": "^17.0.7"
+  },
+  "release": {
+    "branches": [
+      "master"
+    ],
+    "plugins": [
+      [
+        "@semantic-release/commit-analyzer",
+        {
+          "preset": "conventionalcommits"
+        }
+      ],
+      [
+        "@semantic-release/release-notes-generator",
+        {
+          "preset": "conventionalcommits"
+        }
+      ],
+      "@semantic-release/npm",
+      "@semantic-release/github"
+    ]
+  }
+}

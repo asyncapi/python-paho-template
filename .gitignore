@@ -1,0 +1,6 @@
+__pycache__
+samples/config.ini
+python-paho-template.iml
+node_modules
+.idea
+.vscode
