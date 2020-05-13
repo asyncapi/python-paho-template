@@ -5,7 +5,6 @@ const _ = require('lodash');
 module.exports = register => {
   register('generate:after', generator => {
     const asyncapi = generator.asyncapi;
-    const info = asyncapi.info();
 
     for (schema in asyncapi.components().schemas()) {
       let oldName = schema + ".py";
