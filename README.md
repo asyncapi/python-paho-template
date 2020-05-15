@@ -26,7 +26,7 @@ npm install -g @asyncapi/generator
 
 Run the Generator using the Python Paho Template
 ```
-ag ~/AsyncApiDocument.yaml https://github.com/asyncapi/python-paho-template.git
+ag ~/AsyncApiDocument.yaml @asyncapi/python-paho-template
 ```
 
 

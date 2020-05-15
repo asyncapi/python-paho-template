@@ -4,6 +4,8 @@
   "description": "Python Paho template for the AsyncAPI generator.",
   "scripts": {
     "release": "semantic-release",
+    "test": "echo \"No test specified yet\"",
+    "docs": "echo \"No API docs to generate\"",
     "lint": "eslint --config .eslintrc .",
     "lint-fix": "eslint --fix --config .eslintrc .",
     "get-version": "echo $npm_package_version"
@@ -21,6 +23,14 @@
   },
   "author": "Michael Davis <michael@damaru.com>",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asyncapi/python-paho-template.git"
+  },
+  "bugs": {
+    "url": "https://github.com/asyncapi/python-paho-template/issues"
+  },
+  "homepage": "https://github.com/asyncapi/python-paho-template#readme",
   "dependencies": {
     "@asyncapi/generator-filters": "^1.0.0",
     "lodash": "^4.17.15",
