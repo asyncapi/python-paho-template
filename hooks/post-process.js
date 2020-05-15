@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
 
-module.exports = register => {
-  register('generate:after', generator => {
+module.exports = {
+  'generate:after': generator => {
     const asyncapi = generator.asyncapi;
 
     for (schema in asyncapi.components().schemas()) {
@@ -13,5 +13,5 @@ module.exports = register => {
         fs.renameSync(path.resolve(generator.targetDir, oldName), path.resolve(generator.targetDir, newName));
       }
     }
-  })
+  }
 }
