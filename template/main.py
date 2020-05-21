@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import configparser
 import logging
+import time
 
 import messaging
 
-{# for component in asyncapi.components().s -#}
 {% for schemaName, schema in asyncapi.components().schemas() -%}
 {% set moduleName = schemaName | lowerFirst -%}
 from {{ moduleName }} import {{ schemaName }}
@@ -19,15 +19,16 @@ def getConfig():
     return config
 
 {% for channelName, channel in asyncapi.channels() -%}
-{%- if channel.hasSubscribe() -%}
+{% set sub = [asyncapi.info(), params, channel] | getRealSubscriber -%}
+{%- if sub -%}
 {%- set functionName = [channelName, channel] | functionName -%}
-{%- set payloadClass = channel.subscribe() | payloadClass -%}
+{%- set payloadClass = sub | payloadClass -%}
 {%- set varName =  payloadClass | lowerFirst %}
 def {{ functionName }}(client, userdata, msg):
-    jsonString = m = msg.payload.decode('utf-8')
-    logging.debug('Received json: ' + jsonString)
+    jsonString = msg.payload.decode('utf-8')
+    logging.info('Received json: ' + jsonString)
     {{ varName }} = {{ payloadClass }}.from_json(jsonString)
-    logging.info('Received message: ' + {{ varName }})
+    logging.info('Received message: ' + str({{ varName }}))
 {% endif %}
 {% endfor %}
 
@@ -35,24 +36,24 @@ def main():
     logging.basicConfig(level=logging.INFO)
     logging.info('Start of main.')
     config = getConfig()
-{% set messengers = asyncapi | getMessengers -%}
+{% set messengers = [params, asyncapi] | getMessengers -%}
 {%- for messenger in messengers -%}
-{%- if messenger.topic %}
+{%- if messenger.subscribeTopic %}
     {{ messenger.name }} = messaging.Messaging(config, '{{ messenger.topic }}', {{ messenger.functionName }})
 {%- else %}
     {{ messenger.name }} = messaging.Messaging(config)
 {%- endif %}
     {{ messenger.name }}.loop_start()
 {%- endfor %}
+{% set messenger = [params, asyncapi] | getFirstPublisherMessenger -%}
+{%- if messenger %}
+    # Example of how to publish a message:
+    payload = {{ messenger.payloadClass }}()
+    payloadJson = payload.to_json()
 
-
-# TODO: Add your business logic here.
-{% set messenger = asyncapi | getFirstPublisherMessenger -%}
-{%- if messenger -%}
-# To send a message, do this:
-# payload = YourPayloadClass(yourArgs)
-# jsonString = payload.to_json()
-# {{ messenger.name }}.publish("yourTopic", jsonString)
+    while (True):
+        {{ messenger.name }}.publish('{{ messenger.publishTopic }}', payloadJson)
+        time.sleep(1)
 {%- endif %}
 
 if __name__ == '__main__':

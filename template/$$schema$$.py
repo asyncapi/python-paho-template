@@ -1,4 +1,7 @@
 {% from "partials/model-class" import modelClass -%}
 from enum import Enum
+from typing import Sequence
 from entity import Entity
-{{ modelClass(schemaName, schema, schema.properties(), schema.required(), 0 ) }}
+{% set imports = schema | getImports %}
+{{ imports }}
+{{ modelClass(schemaName, schema.properties(), schema.required(), 0 ) }}
