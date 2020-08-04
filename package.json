@@ -1,6 +1,6 @@
 {
   "name": "@asyncapi/python-paho-template",
-  "version": "0.2.0",
+  "version": "0.2.4",
   "description": "Python Paho template for the AsyncAPI generator.",
   "scripts": {
     "release": "semantic-release",
@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@semantic-release/commit-analyzer": "^8.0.1",
-    "@semantic-release/github": "^7.0.4",
+    "@semantic-release/github": "^7.0.7",
     "@semantic-release/npm": "^7.0.3",
     "@semantic-release/release-notes-generator": "^9.0.1",
     "conventional-changelog-conventionalcommits": "^4.2.3",
@@ -64,6 +64,18 @@
       ],
       "@semantic-release/npm",
       "@semantic-release/github"
+    ]
+  },
+  "generator": {
+    "generator": ">=0.50.0 <2.0.0",
+    "parameters": {
+      "view": {
+        "description": "The view that the template uses. By default it is the client view, which means that when the document says publish, we subscribe. In the case of the provider view, when the document says publish, we publish. Values are client or provider. The default is client.",
+        "required": false
+      }
+    },
+    "filters": [
+      "@asyncapi/generator-filters"
     ]
   }
 }
