@@ -10,6 +10,8 @@ class Messaging:
     def __init__(self, config, subscription = None, on_message = None, clientId = None):
         global on_connect
         self.config = config
+        defaultHost = '{{ asyncapi | server }}'
+        logging.info("Default host:", defaultHost)
 
         if (clientId):
             self.client = mqtt.Client(clientId)
@@ -25,9 +27,20 @@ class Messaging:
         if (on_message):
             self.client.on_message = on_message
 
-        self.client.username_pw_set(config['username'], config['password'])
-        port = int(config['port'])
-        self.client.connect(config['host'], port)
+        username = config.get('username', None)
+        password = config.get('password', None)
+
+        if username is not None:
+            self.client.username_pw_set(username, password)
+            
+        port = int(config.get('port', '1883'))
+        host = config.get('host', defaultHost)
+        print("Host: ", host, "port: ", port)
+
+        if host is None:
+            raise Exception("Host must be defined in the config file or in the servers section.")
+
+        self.client.connect(host, port)
 
     def publish(self, topic, payload, qos = 0, retain = False):
         self.client.publish(topic, payload, qos, retain)
