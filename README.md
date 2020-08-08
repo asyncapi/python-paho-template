@@ -22,7 +22,6 @@ Note that this template interprets the AsyncAPI document in conformance with the
 This means that when the template sees a subscribe operation, it will generate code to publish to that operation's channel.
 It is possible to override this, see the 'view' parameter in the parameters section below.
 
-
 ## How to Use This Template
 
 Install the AsyncAPI Generator
