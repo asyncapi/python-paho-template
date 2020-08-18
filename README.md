@@ -9,7 +9,13 @@ Support for arrays, specifying function names and other features are yet to be i
 
 In the samples directory there is an example of code that is close to what we intend to generate.
 
-To run the sample code, copy config-template.ini to config.ini and enter your host and password.
+## Configuration
+
+To run the sample code, copy config-template.ini to config.ini and enter the connection details.
+
+If no authentication is needed, you need not provide the username and password values.
+
+If no host is given, the template attempts to find an mqtt host in the servers section of the AsyncAPI document to use instead.
 
 ## Specification Conformance
 Note that this template interprets the AsyncAPI document in conformance with the [AsyncAPI Specification](https://www.asyncapi.com/docs/specifications/2.0.0/).
@@ -29,6 +35,7 @@ Run the Generator using the Python Paho Template
 ag ~/AsyncApiDocument.yaml @asyncapi/python-paho-template
 ```
 
+Copy config-template.ini to config.ini and edit it to provide the connection details.
 
 ### Parameters
 

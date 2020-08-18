@@ -20,6 +20,11 @@ function functionName([channelName, channel]) {
 }
 filter.functionName = functionName;
 
+function getAnonymousSchema(asyncapi) {
+  return anonymousSchema(asyncapi);
+}
+filter.getAnonymousSchema = getAnonymousSchema;
+
 function getRealSubscriber([info, params, channel]) {
   let pub = templateUtil.getRealSubscriber(info, params, channel);
   return pub
@@ -51,6 +56,45 @@ function identifierName(str) {
 }
 filter.identifierName = identifierName;
 
+// For files like the streetlights tutorial that don't have schemas, this finds the first anonymous schema in a message payload.
+function anonymousSchema(asyncapi) {
+  let ret = null;
+  for (channelName in asyncapi.channels()) {
+    let channel = asyncapi.channel(channelName);
+    let sub = channel.subscribe();
+    //console.log("anonymousSchema " + channelName);
+    //console.log("Sub:");
+    //console.log(sub);
+
+    if (sub) {
+      ret = anonymouseSchemaFromOperation(sub);
+    }
+
+    if (!ret) {
+      let pub = channel.publish();
+      //console.log("Pub:");
+      //console.log(pub)
+      if (pub) {
+        ret = anonymouseSchemaFromOperation(pub);
+      }
+    }
+
+    if (ret) {
+      return ret;
+    }
+  }
+}
+
+function anonymouseSchemaFromOperation(operation) {
+  let ret = null;
+  let payloadClass = filter.payloadClass(operation);
+  //console.log('anonymouseSchemaFromOperation ' + payloadClass);
+  if (payloadClass === 'Payload') {
+    ret = operation.message().payload();
+  }
+  return ret;
+}
+
 function logFull(obj) {
   console.log(obj);
   if (obj) {
@@ -62,12 +106,26 @@ function logFull(obj) {
 filter.logFull = logFull;
 
 
-// This returns the class name of the payload.
+// This returns the class name of the payload. If the schema is embedded, rather than a reference
+// to something in components/schemas, we return the name 'Payload' which will be the class we use for the payload.
 function payloadClass(operation) {
+  //console.log("payloadClass............");
   let ret = operation.message().payload().ext('x-parser-schema-id');
+  //console.log(ret);
+  if (ret.includes("anonymous-schema")) {
+    ret = "Payload";
+  }
   return ret;
 }
 filter.payloadClass = payloadClass;
+
+// This returns the first server it can find in the servers section, mainly to 
+// support the streetlights tutorial.
+function server(asyncapi) {
+  return templateUtil.getServer(asyncapi)
+}
+filter.server = server;
+
 
 // This returns an object containing information the template needs to render topic strings.
 function topicInfo([channelName, channel]) {
@@ -174,7 +232,7 @@ function dump(obj) {
 
 function getImports(schema) {
   let ret = '';
-  //console.log("getImports ----------------------------:");
+  //console.log("getImports");
   //console.log(getMethods(schema))
   //console.log(schema);
   var properties = schema.properties();
@@ -205,7 +263,7 @@ function getImports(schema) {
       }
     } else {
       let ref = property.ext('x-parser-schema-id');
-      if (ref) {
+      if (ref && !ref.includes('anonymous')) {
         let importName = _.lowerFirst(ref);
         ret += `from ${importName} import ${ref}\n`
       }
@@ -250,7 +308,10 @@ function getMessengers([params, asyncapi]) {
       messenger.functionName = getFunctionNameByChannel(channelName, channel);
       messenger.subscribeTopic = topicInfo.subscribeTopic;
       messenger.payload = sub.message().payload();
-      messenger.payloadClass = messenger.payload.ext('x-parser-schema-id');
+      //console.log("payload:");
+      //console.log(messenger.payload);
+      messenger.payloadClass = filter.payloadClass(sub);
+      //console.log(messenger.payloadClass);
       //console.log(messenger);
       ret.push(messenger);
     }
@@ -266,26 +327,27 @@ function getMessengers([params, asyncapi]) {
 filter.getMessengers = getMessengers;
 
 function getFirstPublisherMessenger([params, asyncapi]) {
+  //console.log('getFirstPublisherMessenger');
+  let ret = null;
   for (channelName in asyncapi.channels()) {
     let channel = asyncapi.channel(channelName);
     let pub = templateUtil.getRealPublisher(asyncapi.info(), params, channel);
-    //(pub);
+
     if (pub) {
       let messenger = {};
       messenger.name = _.camelCase(channelName) + "Messenger";
       messenger.functionName = getFunctionNameByChannel(channelName, channel);
       messenger.publishTopic = channelName;
       messenger.payload = pub.message().payload();
-      messenger.payloadClass = messenger.payload.ext('x-parser-schema-id');
-      //console.log(messenger.payloadClass);
-      //console.log(messenger.name);
-      return messenger;
+      messenger.payloadClass = filter.payloadClass(pub);
+      //console.log("getFirstPublisherMessenger messenger.payloadClass: " + messenger.payloadClass);
+      //console.log("getFirstPublisherMessenger messenger.name:         " + messenger.name);
+      ret =  messenger;
+      break;
     }
   }
-
-  let messenger = {};
-  messenger.name = "messenger";
-  return messenger;
+  //console.log('getFirstPublisherMessenger ' + ret);
+  return ret;
 }
 filter.getFirstPublisherMessenger = getFirstPublisherMessenger;
 
