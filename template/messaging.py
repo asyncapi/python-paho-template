@@ -11,7 +11,6 @@ class Messaging:
         global on_connect
         self.config = config
         defaultHost = '{{ asyncapi | server }}'
-        logging.info("Default host:", defaultHost)
 
         if (clientId):
             self.client = mqtt.Client(clientId)
