@@ -36,7 +36,7 @@ function indent1(numTabs) {
 }
 filter.indent1 = indent1;
 
-function  indent2(numTabs) {
+function indent2(numTabs) {
   return indent(numTabs + 1);
 }
 filter.indent2 = indent2;
@@ -115,7 +115,7 @@ function payloadClass(operation) {
   if (ret.includes("anonymous-schema")) {
     ret = "Payload";
   }
-  return ret;
+  return _.upperFirst(ret);
 }
 filter.payloadClass = payloadClass;
 
@@ -151,23 +151,30 @@ function determineType(name, property) {
   ret.properties = property.properties(); // can change if it's an embedded type.
   ret.pythonName = templateUtil.getIdentifierName(name);
   //console.log(name + ": " + type);
+  //console.log(property);
 
-  if (type === undefined) {
-    if (property.enum()) {
-      ret.type = _.upperFirst(ret.pythonName);
-      ret.pythonType = ret.type;
-      ret.generalType = 'enum';
-      ret.enum = property.enum();
-      //console.log("enum is " + dump(ret.enum))
-    } else {
-      // check to see if it's a ref to another schema.
-      ret.type = property.ext('x-parser-schema-id');
-      ret.generalType = 'objectRef';
-      ret.pythonType = ret.type
+  if (property.enum()) {
+    ret.type = _.upperFirst(ret.pythonName);
+    ret.pythonType = ret.type;
+    ret.generalType = 'enum';
+    ret.enum = property.enum();
+    let e = ret.enum;
 
-      if (!ret.type) {
-        throw new Error("Can't determine the type of property " + name);
-      }
+
+    for (var i = 0; i < e.length; i++) {
+      let v = e[i].replace(/\W/g, '')
+      e[i] = v;
+      //console.log(v);
+    }
+    //console.log("enum is " + t);
+  } else if (type === undefined) {
+    // check to see if it's a ref to another schema.
+    ret.type = property.ext('x-parser-schema-id');
+    ret.generalType = 'objectRef';
+    ret.pythonType = ret.type
+
+    if (!ret.type) {
+      throw new Error("Can't determine the type of property " + name);
     }
   } else if (type === 'array') {
     ret.generalType = 'array';
@@ -185,7 +192,7 @@ function determineType(name, property) {
         itemsType = _.upperFirst(ret.pythonName);
         ret.properties = items.properties();
       } else {
-        itemsType = typeMap.get(itemsType);
+        itemsType = typeMap[itemsType];
       }
     }
     if (!itemsType) {
@@ -236,7 +243,7 @@ function getImports(schema) {
   //console.log(getMethods(schema))
   //console.log(schema);
   var properties = schema.properties();
-  
+
 
   if (schema.type() === 'array') {
     properties = schema.items().properties();
@@ -254,7 +261,7 @@ function getImports(schema) {
       if (type === 'array') {
         let itemsType = property.items();
         let ref = itemsType.ext('x-parser-schema-id');
-        if (ref) {
+        if (ref && !ref.includes('anonymous')) {
           let importName = _.lowerFirst(ref);
           ret += `from ${importName} import ${ref}\n`
         }
@@ -263,12 +270,14 @@ function getImports(schema) {
       }
     } else {
       let ref = property.ext('x-parser-schema-id');
+      //console.log(`undefined type, ref is ${ref}`);
       if (ref && !ref.includes('anonymous')) {
         let importName = _.lowerFirst(ref);
         ret += `from ${importName} import ${ref}\n`
       }
     }
   }
+  //console.log(`getImports returing ${ret}`);
   return ret;
 }
 filter.getImports = getImports;
@@ -342,7 +351,7 @@ function getFirstPublisherMessenger([params, asyncapi]) {
       messenger.payloadClass = filter.payloadClass(pub);
       //console.log("getFirstPublisherMessenger messenger.payloadClass: " + messenger.payloadClass);
       //console.log("getFirstPublisherMessenger messenger.name:         " + messenger.name);
-      ret =  messenger;
+      ret = messenger;
       break;
     }
   }
