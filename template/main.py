@@ -8,7 +8,7 @@ import messaging
 {% if asyncapi.components() -%}
 {% for schemaName, schema in asyncapi.components().schemas() -%}
 {% set moduleName = schemaName | lowerFirst -%}
-from {{ moduleName }} import {{ schemaName }}
+from {{ moduleName }} import {{ schemaName | upperFirst }}
 {% endfor -%}
 {% else -%}
 from payload import Payload
