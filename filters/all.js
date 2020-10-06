@@ -59,7 +59,7 @@ filter.identifierName = identifierName;
 // For files like the streetlights tutorial that don't have schemas, this finds the first anonymous schema in a message payload.
 function anonymousSchema(asyncapi) {
   let ret = null;
-  for (channelName in asyncapi.channels()) {
+  for (const channelName in asyncapi.channels()) {
     let channel = asyncapi.channel(channelName);
     let sub = channel.subscribe();
     //console.log("anonymousSchema " + channelName);
@@ -129,7 +129,6 @@ filter.server = server;
 
 // This returns an object containing information the template needs to render topic strings.
 function topicInfo([channelName, channel]) {
-  let p = channel.parameters();
   return getTopicInfo(channelName, channel);
 }
 filter.topicInfo = topicInfo;
@@ -186,7 +185,6 @@ function determineType(name, property) {
     let itemsType = items.type();
 
     if (itemsType) {
-
       if (itemsType === 'object') {
         ret.recursive = true;
         itemsType = _.upperFirst(ret.pythonName);
@@ -195,6 +193,7 @@ function determineType(name, property) {
         itemsType = typeMap[itemsType];
       }
     }
+
     if (!itemsType) {
       itemsType = items.ext('x-parser-schema-id');
       ret.referenceType = itemsType;
@@ -303,10 +302,9 @@ function getFunctionNameByChannel(channelName, channel) {
 }
 
 function getMessengers([params, asyncapi]) {
-  let haveMessenger = false;
   let ret = [];
 
-  for (channelName in asyncapi.channels()) {
+  for (const channelName in asyncapi.channels()) {
     let channel = asyncapi.channel(channelName);
     let sub = templateUtil.getRealSubscriber(asyncapi.info(), params, channel);
 
@@ -338,7 +336,7 @@ filter.getMessengers = getMessengers;
 function getFirstPublisherMessenger([params, asyncapi]) {
   //console.log('getFirstPublisherMessenger');
   let ret = null;
-  for (channelName in asyncapi.channels()) {
+  for (const channelName in asyncapi.channels()) {
     let channel = asyncapi.channel(channelName);
     let pub = templateUtil.getRealPublisher(asyncapi.info(), params, channel);
 
@@ -374,9 +372,9 @@ function getTopicInfo(channelName, channel) {
   //console.log("params: " + JSON.stringify(channel.parameters()));
   for (let name in channel.parameters()) {
     const nameWithBrackets = "{" + name + "}";
-    const parameter = channel.parameter(name);
-    const schema = parameter.schema();
-    const type = schema.type();
+    //const parameter = channel.parameter(name);
+    //const schema = parameter.schema();
+    //const type = schema.type();
     const param = { "name": _.lowerFirst(name) };
     //console.log("name: " + name + " type: " + type);
     let sampleArg = 1;
