@@ -9,7 +9,7 @@ module.exports = {
 
     if (asyncapi.components()) {
 
-      for (schema in asyncapi.components().schemas()) {
+      for (const schema in asyncapi.components().schemas()) {
         hasSchema = true;
         let oldName = schema + ".py";
         let newName = _.lowerFirst(oldName);
