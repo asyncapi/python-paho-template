@@ -13,11 +13,11 @@ info:
 channels:
   sensor/temperature/fahrenheit:
     subscribe:
-      x-scs-function-name: sub
+      x-function-name: sub
       message:
         $ref: "#/components/messages/SensorReadingMessage"
     publish:
-      x-scs-function-name: pub
+      x-function-name: pub
       message:
         $ref: "#/components/messages/SensorReadingMessage"
 components:
