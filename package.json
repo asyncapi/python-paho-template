@@ -1,12 +1,11 @@
 {
   "name": "@asyncapi/python-paho-template",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Python Paho template for the AsyncAPI generator.",
   "scripts": {
     "release": "semantic-release",
     "test": "echo \"No test specified yet\"",
-    "lint": "eslint --config .eslintrc .",
-    "lint:fix": "eslint --fix --config .eslintrc .",
+    "lint": "echo \"No linter specified yet\"",
     "generate:assets": "echo 'No additional assets need to be generated at the moment'",
     "bump:version": "npm --no-git-tag-version --allow-same-version version $VERSION"
   },

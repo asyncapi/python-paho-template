@@ -293,7 +293,7 @@ const getMethods = (obj) => {
 function getFunctionNameByChannel(channelName, channel) {
   let ret = _.camelCase(channelName);
   //console.log('functionName channel: ' + JSON.stringify(channelJson));
-  let functionName = channel.ext(['x-function-name']);
+  let functionName = channel.ext('x-function-name');
   //console.log('function name for channel ' + channelName + ': ' + functionName);
   if (functionName) {
     ret = functionName;
