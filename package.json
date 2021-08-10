@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/asyncapi/python-paho-template#readme",
   "dependencies": {
-    "@asyncapi/generator-filters": "^2.0.0",
+    "@asyncapi/generator-filters": "^2.1.0",
     "js-yaml": "^3.13.1",
     "lodash": "^4.17.15"
   },
