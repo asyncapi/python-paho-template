@@ -26,8 +26,7 @@ function getAnonymousSchema(asyncapi) {
 filter.getAnonymousSchema = getAnonymousSchema;
 
 function getRealSubscriber([info, params, channel]) {
-  let pub = templateUtil.getRealSubscriber(info, params, channel);
-  return pub
+  return templateUtil.getRealSubscriber(info, params, channel);
 }
 filter.getRealSubscriber = getRealSubscriber;
 
@@ -87,9 +86,9 @@ function anonymousSchema(asyncapi) {
 
 function anonymouseSchemaFromOperation(operation) {
   let ret = null;
-  let payloadClass = filter.payloadClass(operation);
+  let payloadClassName = filter.payloadClass(operation);
   //console.log('anonymouseSchemaFromOperation ' + payloadClass);
-  if (payloadClass === 'Payload') {
+  if (payloadClassName === 'Payload') {
     ret = operation.message().payload();
   }
   return ret;
@@ -293,10 +292,10 @@ const getMethods = (obj) => {
 function getFunctionNameByChannel(channelName, channel) {
   let ret = _.camelCase(channelName);
   //console.log('functionName channel: ' + JSON.stringify(channelJson));
-  let functionName = channel.ext('x-function-name');
+  let channelFunctionName = channel.ext('x-function-name');
   //console.log('function name for channel ' + channelName + ': ' + functionName);
-  if (functionName) {
-    ret = functionName;
+  if (channelFunctionName) {
+    ret = channelFunctionName;
   }
   return ret;
 }
@@ -310,10 +309,10 @@ function getMessengers([params, asyncapi]) {
 
     if (sub) {
       let messenger = {};
-      let topicInfo = getTopicInfo(channelName, channel);
+      let subTopicInfo = getTopicInfo(channelName, channel);
       messenger.name = _.camelCase(channelName) + "Messenger";
       messenger.functionName = getFunctionNameByChannel(channelName, channel);
-      messenger.subscribeTopic = topicInfo.subscribeTopic;
+      messenger.subscribeTopic = subTopicInfo.subscribeTopic;
       messenger.payload = sub.message().payload();
       //console.log("payload:");
       //console.log(messenger.payload);
