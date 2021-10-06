@@ -27,8 +27,9 @@
 ):
 {%- for name, prop in properties -%}
 {%- set typeInfo = [name, prop] | getTypeInfo %}
-{{ indent3}}self.{{typeInfo.pythonName}} = {{typeInfo.pythonName}}
+{{ indent3 }}self.{{typeInfo.pythonName}} = {{typeInfo.pythonName}}
+{%- else %}
+{{ indent3 }}pass
 {%- endfor %}
-
 
 {% endmacro -%}
