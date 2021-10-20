@@ -5,7 +5,7 @@
 {% set indent3 = indentLevel | indent3 -%}
 {% set indent4 = indentLevel | indent4 -%}
 
-{{ indent1 }}class {{name | upperFirst}}(Entity):
+{{ indent1 }}class {{ name | upperFirst }}(Entity):
 {% for name, prop in properties -%}
 {%- set typeInfo = [name, prop] | getTypeInfo -%}
 {%- if typeInfo.recursive -%}
@@ -17,18 +17,19 @@
 {% endfor -%}
 {%- endif %}
 {%- endfor %}
-{{indent2}}def __init__(
+{{ indent2 }}def __init__(
 {{ indent4 }}self
 {%- for name, prop in properties -%}
 {%- set typeInfo = [name, prop] | getTypeInfo -%}
 ,
-{{ indent4 }}{{typeInfo.pythonName}}{{ ": " + typeInfo.pythonType if typeInfo.pythonType else ""}}
+{{ indent4 }}{{ typeInfo.pythonName }}{{ ": " + typeInfo.pythonType if typeInfo.pythonType else "" }}
 {%- endfor -%}
 ):
 {%- for name, prop in properties -%}
 {%- set typeInfo = [name, prop] | getTypeInfo %}
-{{ indent3}}self.{{typeInfo.pythonName}} = {{typeInfo.pythonName}}
+{{ indent3 }}self.{{ typeInfo.pythonName }} = {{ typeInfo.pythonName }}
+{%- else %}
+{{ indent3 }}pass
 {%- endfor %}
-
 
 {% endmacro -%}
