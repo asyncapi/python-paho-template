@@ -31,8 +31,9 @@ class Messaging:
 
         if username is not None:
             self.client.username_pw_set(username, password)
-            
-        port = int(config.get('port', '1883'))
+
+        port = config.get('port')
+        port = int(port) if port else 1833
         host = config.get('host', defaultHost)
         print("Host: ", host, "port: ", port)
 
