@@ -52,4 +52,3 @@ Extension | Parameter | Default | Description
 ----------|-----------|---------|-------------
 info.x-view | view | client | By default, this template generates publisher code for subscribe operations and vice versa. You can switch this by setting this parameter to 'provider'.
 
-
