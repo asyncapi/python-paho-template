@@ -18,11 +18,5 @@ module.exports = {
         }
       }
     }
-
-    // If there are no schemas, we expect to find an anonymous one embedded in a payload. If we do have schemas we assume we don't need this.
-    // This will turn out to be a bug if we ever have a file with schemas, but which also has an anonymous schema embedded in an operation.
-    if (hasSchema) {
-      fs.unlinkSync(path.resolve(generator.targetDir, 'payload.py'));
-    }
   }
 }
