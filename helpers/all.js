@@ -435,3 +435,5 @@ function getTopicInfo(channelName, channel) {
 function indent(numTabs) {
   return " ".repeat(numTabs * 4);
 }
+
+module.exports = filter;

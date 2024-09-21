@@ -1,4 +1,9 @@
-import paho.mqtt.client as mqtt
+const { File } = require('@asyncapi/generator-react-sdk');
+
+function MessagingFile({  }) {
+    return (
+        <File name={'messaging.py'}>
+            {`import paho.mqtt.client as mqtt
 import configparser
 import logging
 import json
@@ -58,3 +63,9 @@ def on_connect(client, userdata, flags, rc):
     if (userdata):
         client.subscribe(userdata)
 
+`}
+        </File>
+    );
+}
+
+module.exports = MessagingFile;
